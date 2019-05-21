@@ -1,0 +1,89 @@
+syntax = "proto3";
+option java_package = "com.braincs.kylinprotocol.pb";
+option java_outer_classname = "KylinProto";
+package pb;
+
+message Rect {
+    int32 left   = 1;
+    int32 top    = 2;
+    int32 width  = 3;
+    int32 height = 4;
+}
+
+message RectF {
+    float left   = 1;
+    float top    = 2;
+    float width  = 3;
+    float height = 4;
+}
+
+message Response {
+    int32  success = 1;
+    string err     = 2;
+}
+
+message Start {
+    enum Mode {
+        capture   = 0;
+        recognize = 1;
+    }
+    Mode  mode                  = 1;
+    bool  is_open               = 2;
+    int32 health_check_interval = 3;
+}
+
+message Group {
+    string group = 1;
+    int32  top = 2;
+    float  threshold = 3;
+}
+
+message Face {
+    string group     = 1;
+    string face      = 2;
+    string name      = 3;
+
+    string url       = 10;
+    bytes  image     = 100;
+}
+
+message Capture {
+    int32 track = 1;
+    int32 seq_num = 2;
+    
+    int64 timestamp = 10;
+    float quality = 11;
+    
+    bytes crop = 100;
+    RectF crop_rect  = 101;
+
+    bytes full = 200;
+}
+
+message Recognize {
+    message Result {
+        string face  = 1;
+        string name  = 2;
+
+        float  score = 11;
+    }
+    repeated Result top  = 1;
+    string group = 2;
+
+    bytes crop  = 100;
+    bytes full  = 101;
+}
+
+message SnapShot {
+    bytes image = 100;
+}
+
+message Upgrade {
+    int32  timeout = 1;
+    string url = 10;
+}
+
+message UpgradeProgress {
+    int32 progress = 1;
+}
+
