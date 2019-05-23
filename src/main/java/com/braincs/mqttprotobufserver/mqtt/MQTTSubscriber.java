@@ -1,5 +1,7 @@
 package com.braincs.mqttprotobufserver.mqtt;
 
+import com.braincs.kylinprotocol.pb.KylinProto;
+import com.braincs.mqttprotobufserver.utils.FileUtil;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
@@ -7,14 +9,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Component
 public class MQTTSubscriber extends MQTTConfig implements MqttCallback, IMQTTSubscriber {
 
     private String brokerUrl = null;
     final private String colon = ":";
-    final private String clientId = "demoClient2";
-
+    final private String clientId = "mqtt_server_sub";
+    private final String folder = "/Users/changshuai/IdeaProjects/mqtt-protobuf-server/tmp";
+    private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
     private MqttClient mqttClient = null;
     private MqttConnectOptions connectionOptions = null;
     private MemoryPersistence persistence = null;
@@ -48,11 +53,27 @@ public class MQTTSubscriber extends MQTTConfig implements MqttCallback, IMQTTSub
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         // Called when a message arrives from the server that matches any
         // subscription made by the client
-        String time = new Timestamp(System.currentTimeMillis()).toString();
         System.out.println();
         System.out.println("***********************************************************************");
-        System.out.println("Message Arrived at Time: " + time + "  Topic: " + topic + "  Message: "
-                + new String(message.getPayload()));
+        String time = new Timestamp(System.currentTimeMillis()).toString();
+        if (topic.endsWith("/in/recognize")) {
+            System.out.println("Message Arrived at Time: " + time + "  Topic: " + topic);
+            KylinProto.Recognize recognize = KylinProto.Recognize.parseFrom(message.getPayload());
+            byte[] data = recognize.getCrop().toByteArray();
+            String dateStr = this.format.format(new Date());
+            String saveFile = FileUtil.save(folder, "recognize_" + dateStr + ".jpg", data);
+            System.out.println("saved success : " + saveFile);
+        } else if (topic.endsWith("/in/snapshot")) {
+            System.out.println("Message Arrived at Time: " + time + "  Topic: " + topic);
+            KylinProto.SnapShot snapShot = KylinProto.SnapShot.parseFrom(message.getPayload());
+            byte[] data = snapShot.getImage().toByteArray();
+            String dateStr = this.format.format(new Date());
+            String saveFile = FileUtil.save(folder, "snapshot_" + dateStr + ".jpg", data);
+            System.out.println("saved success : " + saveFile);
+        } else {
+            System.out.println("Message Arrived at Time: " + time + "  Topic: " + topic + "  Message: "
+                    + new String(message.getPayload()));
+        }
         System.out.println("***********************************************************************");
         System.out.println();
     }
