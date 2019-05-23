@@ -133,6 +133,13 @@ public class MQTTPublisher extends MQTTConfig implements MqttCallback, IMQTTPubl
 
     }
 
+    public void publish(String topic, byte[] message, int qos, boolean retained){
+        try {
+            this.mqttClient.publish(topic, message, qos, retained );
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
     /*
      * (non-Javadoc)
      * @see org.eclipse.paho.client.mqttv3.MqttCallback#connectionLost(java.lang.Throwable)
