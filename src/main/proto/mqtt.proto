@@ -87,3 +87,9 @@ message UpgradeProgress {
     int32 progress = 1;
 }
 
+message Status {
+    string version   = 1;
+    string algorithm = 2;
+
+    string local_ip  = 10;
+}

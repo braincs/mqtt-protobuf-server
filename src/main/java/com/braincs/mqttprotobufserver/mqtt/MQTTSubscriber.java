@@ -70,6 +70,10 @@ public class MQTTSubscriber extends MQTTConfig implements MqttCallback, IMQTTSub
             String dateStr = this.format.format(new Date());
             String saveFile = FileUtil.save(folder, "snapshot_" + dateStr + ".jpg", data);
             System.out.println("saved success : " + saveFile);
+        } else if (topic.endsWith("/in/check")){
+            System.out.println("Message Arrived at Time: " + time + "  Topic: " + topic);
+            KylinProto.Status status = KylinProto.Status.parseFrom(message.getPayload());
+            System.out.println("received status : " + status.toString());
         } else {
             System.out.println("Message Arrived at Time: " + time + "  Topic: " + topic + "  Message: "
                     + new String(message.getPayload()));

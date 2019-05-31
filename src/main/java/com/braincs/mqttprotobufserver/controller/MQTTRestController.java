@@ -85,7 +85,7 @@ public class MQTTRestController {
         isOpen = !isOpen;
         KylinProto.Start.Builder builder = KylinProto.Start.newBuilder();
         KylinProto.Start start = builder.setIsOpen(isOpen)
-                .setHealthCheckInterval(20)
+                .setHealthCheckInterval(health_check_interval)
                 .setMode(KylinProto.Start.Mode.recognize)
                 .build();
 
